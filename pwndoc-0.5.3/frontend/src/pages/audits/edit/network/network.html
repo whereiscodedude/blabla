@@ -1,0 +1,66 @@
+<template>
+  <div class="q-pa-md">
+    <breadcrumb :items="breadcrumbItems" />
+    <q-page>
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">{{ $t('network.title') }}</div>
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-btn @click="triggerFileInput('nmap')">IMPORT NMAP</q-btn>
+          <q-btn @click="triggerFileInput('nessus')">IMPORT NESSUS</q-btn>
+          <input type="file" ref="nmapFileInput" @change="handleFileChange('nmap', $event)" style="display: none" />
+          <input type="file" ref="nessusFileInput" @change="handleFileChange('nessus', $event)" style="display: none" />
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-table
+            :rows="targetsOptions"
+            :columns="dtHostHeaders"
+            row-key="ip"
+            :pagination="hostPagination"
+          >
+            <template v-slot:body-cell-ip="props">
+              <q-td :props="props">
+                {{ props.row.properties["host-ip"] }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-os="props">
+              <q-td :props="props">
+                {{ props.row.properties["os"] }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-hostname="props">
+              <q-td :props="props">
+                {{ props.row.properties["hostname"] }}
+              </q-td>
+            </template>
+            <template v-slot:body-cell-services="props">
+              <q-td :props="props">
+                <ul>
+                  <li v-for="service in props.row.services" :key="service.port">
+                    {{ service.protocol }}:{{ service.port }} - {{ service.name }} ({{ service.version }})
+                  </li>
+                </ul>
+              </q-td>
+            </template>
+          </q-table>
+          <q-btn @click="addAllToFindings">ADD ALL TO FINDINGS</q-btn>
+        </q-card-section>
+      </q-card>
+    </q-page>
+  </div>
+</template>
+
+<script>
+import Breadcrumb from 'components/breadcrumb';
+import network from './network';
+
+export default {
+  components: {
+    Breadcrumb
+  },
+  mixins: [network]
+};
+</script>
